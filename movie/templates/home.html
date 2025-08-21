@@ -1,19 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 </head>
 
 <body>
-    <div class="container my-4">
-        <form action="" method="GET" class="mb-4">
-            <div class="row g-2 align-items-center">
-                <div class="col-auto">
-                    <label for="searchMovie" class="col-form-label">Search for Movie:</label>
+    <div>
+        <form action="" method="GET">
+            <div>
+                <div>
+                    <label for="searchMovie">Search for Movie:</label>
                 </div>
-                <div class="col">
-                    <input type="text" name="searchMovie" id="searchMovie" class="form-control">
+                <div>
+                    <input type="text" name="searchMovie" id="searchMovie">
                 </div>
-                <div class="col-auto">
+                <div>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </div>
             </div>
@@ -28,23 +31,33 @@
             </strong>
         </p>
 
-        <!-- Grid de películas -->
-        <div class="row justify-content-center g-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             {% for movie in movies %}
-            <div class="col-sm-6 col-md-4 col-lg-3">
-                <div class="card h-100 shadow-sm">
-                    <img src="{{ movie.image.url }}" class="card-img-top" alt="Movie Poster"
-                        style="height: 350px; object-fit: cover;">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ movie.title }}</h5>
-                        <p class="card-text">{{ movie.description }}</p>
-                        {% if movie.url %}
-                        <a href="{{ movie.url }}" target="_blank" class="btn btn-outline-primary mt-auto">Movie Link</a>
-                        {% endif %}
-                    </div>
+            <div class="card" style="width: 18rem">
+                <img src="{{ movie.image.url }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ movie.title }}</h5>
+                    <p class="card-text">{{ movie.description }}</p>
+                    {% if movie.url %}
+                    <a href="{{ movie.url }}" class="btn btn-primary">Movie Link</a>
+                    {% endif %}
+                    <p class="card-text"><b class="text-muted">Genre:</b> <small class="text-muted">{{ movie.genre }}</small></p>
+                    <p class="card-text"><b class="text-muted">Year:</b> <small class="text-muted">{{ movie.year }}</small></p>
                 </div>
             </div>
             {% endfor %}
         </div>
+        <br/>
+        <br/>
+        <br/>
+        <h2>Join our mailing list:</h2>
+        <form action="{% url 'signup' %}">
+            <div class="mb-3">
+                <label for="email" class="form-label">Enter your email: </label>
+                <input type="email" class="form-control" name="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
     </div>
 </body>
+{% endblock content %}
