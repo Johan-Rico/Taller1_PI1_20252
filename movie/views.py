@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib 
 import io 
 import urllib, base64 
+import numpy as np
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
 
 from .models import Movie
 
@@ -89,3 +93,55 @@ def statistics_view(request):
         'graphic': graphic,
         'graphic_genre': graphic_genre
     })
+
+
+def cosine_similarity(a, b):
+    """Calculate cosine similarity between two vectors."""
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
+def movie_search(request):
+    """Search for movies using natural language prompts and OpenAI embeddings."""
+    best_movie = None
+    max_similarity = 0
+    prompt = None
+    error_message = None
+    
+    if request.method == 'POST':
+        prompt = request.POST.get('prompt', '').strip()
+        
+        if prompt:
+            try:
+                load_dotenv('openAI.env')
+                client = OpenAI(api_key=os.environ.get('openai_apikey'))
+                
+                response = client.embeddings.create(
+                    input=[prompt],
+                    model="text-embedding-3-small"
+                )
+                prompt_emb = np.array(response.data[0].embedding, dtype=np.float32)
+                
+                for movie in Movie.objects.all():
+                    try:
+                        movie_emb = np.frombuffer(movie.emb, dtype=np.float32)
+                        similarity = cosine_similarity(prompt_emb, movie_emb)
+                        
+                        if similarity > max_similarity:
+                            max_similarity = similarity
+                            best_movie = movie
+                    except Exception as e:
+                        continue
+                        
+            except Exception as e:
+                error_message = f"Error processing request: {str(e)}"
+        else:
+            error_message = "Please enter a search prompt."
+    
+    context = {
+        'prompt': prompt,
+        'best_movie': best_movie,
+        'similarity': max_similarity,
+        'error_message': error_message
+    }
+    
+    return render(request, 'movie_search.html', context)

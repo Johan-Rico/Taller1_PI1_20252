@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Movie Search</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="prompt" class="form-label">Describe the movie:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="prompt"
+            name="prompt"
+            placeholder="e.g., space movie, romantic comedy, war film..."
+            value="{% if prompt %}{{ prompt }}{% endif %}"
+            required
+          />
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if error_message %}
+  <div class="row justify-content-center mt-3">
+    <div class="col-md-6">
+      <div class="alert alert-danger">{{ error_message }}</div>
+    </div>
+  </div>
+  {% endif %} {% if best_movie and not error_message %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">{{ best_movie.title }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              {% if best_movie.image %}
+              <img
+                src="{{ best_movie.image.url }}"
+                class="img-fluid rounded"
+                alt="{{ best_movie.title }}"
+              />
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              {% if best_movie.year %}
+              <p><strong>Year:</strong> {{ best_movie.year }}</p>
+              {% endif %} {% if best_movie.genre %}
+              <p><strong>Genre:</strong> {{ best_movie.genre }}</p>
+              {% endif %}
+
+              <p>{{ best_movie.description }}</p>
+
+              {% if best_movie.url %}
+              <a
+                href="{{ best_movie.url }}"
+                class="btn btn-primary btn-sm"
+                target="_blank"
+              >
+                More Info
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock content %}
