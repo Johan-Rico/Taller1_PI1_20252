@@ -1,80 +1,86 @@
 {% extends 'base.html' %} {% block content %}
 
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Movie Search</h2>
+<head>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+    crossorigin="anonymous"
+  />
+</head>
 
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="prompt" class="form-label">Describe the movie:</label>
-          <input
-            type="text"
-            class="form-control"
-            id="prompt"
-            name="prompt"
-            placeholder="e.g., space movie, romantic comedy, war film..."
-            value="{% if prompt %}{{ prompt }}{% endif %}"
-            required
-          />
-        </div>
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  {% if error_message %}
-  <div class="row justify-content-center mt-3">
-    <div class="col-md-6">
-      <div class="alert alert-danger">{{ error_message }}</div>
-    </div>
-  </div>
-  {% endif %} {% if best_movie and not error_message %}
-  <div class="row justify-content-center mt-4">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">{{ best_movie.title }}</h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-4">
-              {% if best_movie.image %}
-              <img
-                src="{{ best_movie.image.url }}"
-                class="img-fluid rounded"
-                alt="{{ best_movie.title }}"
-              />
-              {% endif %}
-            </div>
-            <div class="col-md-8">
-              {% if best_movie.year %}
-              <p><strong>Year:</strong> {{ best_movie.year }}</p>
-              {% endif %} {% if best_movie.genre %}
-              <p><strong>Genre:</strong> {{ best_movie.genre }}</p>
-              {% endif %}
-
-              <p>{{ best_movie.description }}</p>
-
-              {% if best_movie.url %}
-              <a
-                href="{{ best_movie.url }}"
-                class="btn btn-primary btn-sm"
-                target="_blank"
-              >
-                More Info
-              </a>
-              {% endif %}
-            </div>
+<body>
+  <div class="container mt-4">
+    <div class="row justify-content-center mb-4">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title text-center mb-3">Movie Recommendations</h5>
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="prompt" class="form-label">Describe the movie you want:</label>
+                <input
+                  type="text"
+                  name="prompt"
+                  id="prompt"
+                  class="form-control"
+                  placeholder="e.g., space movie, romantic comedy..."
+                  value="{% if prompt %}{{ prompt }}{% endif %}"
+                  required
+                />
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg">
+                  <i class="bi bi-magic"></i> Get Recommendation
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
+
+    {% if error_message %}
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="alert alert-danger">{{ error_message }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <p class="text-center text-muted">
+    {% if prompt %}
+        Recommendation for: <strong>"{{ prompt }}"</strong>
+      {% else %}
+        Enter a description to get your movie recommendation
+      {% endif %}
+    </p>
+
+    {% if best_movie and not error_message %}
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <img
+            src="{{ best_movie.image.url }}"
+            class="card-img-top"
+            alt="{{ best_movie.title }}"
+          />
+          <div class="card-body">
+            <h5 class="card-title fw-bold">{{ best_movie.title }}</h5>
+            <p class="card-text">{{ best_movie.description }}</p>
+            {% if best_movie.url %}
+            <a href="{{ best_movie.url }}" class="btn btn-primary">Movie Link</a>
+            {% endif %}
+            <p class="card-text"><b class="text-muted">Genre:</b> <small class="text-muted">{{ best_movie.genre }}</small></p>
+            <p class="card-text"><b class="text-muted">Year:</b> <small class="text-muted">{{ best_movie.year }}</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <br />
   </div>
-  {% endif %}
-</div>
+</body>
 
 {% endblock content %}
